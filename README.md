@@ -2,7 +2,7 @@
 
 Persistent, observable GSD-Pi subagents running in Herdr-managed panes.
 
-> **Project status:** documentation and technical-design phase. No production installation is available yet.
+> **Project status:** M0 technical-feasibility validation. The GSD-Pi package-loading investigation is complete; no production installation is available yet.
 
 ## Why this exists
 
@@ -101,18 +101,24 @@ The long-term target is to remove the GSD-Pi patch after an equivalent generic e
 - [`docs/TESTING.md`](docs/TESTING.md) — test layers, parity requirements, failure injection, and CI matrices.
 - [`docs/UPSTREAM_MAINTENANCE.md`](docs/UPSTREAM_MAINTENANCE.md) — patch queue and upstream update workflow.
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) — architectural decisions and their rationale.
+- [`docs/spikes/M0.6-GSD-PACKAGE-LOADING.md`](docs/spikes/M0.6-GSD-PACKAGE-LOADING.md) — released GSD-Pi resource selection, synchronization, fingerprinting, and overlay constraints.
 
 ## Current phase
 
 The project is in **M0: repository foundation and feasibility validation**.
 
+Completed evidence:
+
+- the normal released GSD-Pi runtime selects compiled `dist/resources`, not an overlaid `src/resources` tree;
+- bundled resources are synchronized into the managed GSD agent directory before extension loading;
+- a valid resource overlay must include built output, a regenerated content fingerprint, and a controlled resynchronization.
+
 Current priorities:
 
-1. Finish the initial design documentation.
-2. Verify the released GSD-Pi runtime loading path and patch-delivery options.
-3. Verify the required Herdr methods using its installed API schema.
-4. Record the technical-spike results in `PLANNING.md`.
-5. Bootstrap implementation packages only after those decisions are evidence-backed.
+1. Verify the required Herdr methods using the actual `v0.8.2`/installed API schema.
+2. Compare a prebuilt GSD resource overlay with a complete patched source build in isolation.
+3. Record the final M0 packaging decision and executable spike evidence.
+4. Bootstrap implementation packages only after those decisions are evidence-backed.
 
 ## Development rule
 
