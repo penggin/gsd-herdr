@@ -378,3 +378,42 @@ Before distributing implementation artifacts:
 - choose a compatible project license;
 - add `LICENSE` and any required notices;
 - mark modified Apache-licensed files if any are distributed.
+
+---
+
+## ADR-015 — Do not patch released GSD-Pi through `src/resources` alone
+
+**Status:** Accepted  
+**Date:** 2026-08-29
+
+### Context
+
+M0.6 inspected the exact GSD-Pi `v1.16.2` runtime and publication path. A normal release starts from `dist/loader.js`, prefers a complete `dist/resources` tree over `src/resources`, compiles resource TypeScript into that built tree during publication, and synchronizes the selected resources into `~/.gsd/agent` before extension loading.
+
+The built tree also contains a trusted `.managed-resources-content-hash`. When the installed package version and managed content hash match, GSD can skip a full resynchronization of the agent directory.
+
+### Decision
+
+A released GSD-Pi installation must not be modified by overlaying only `src/resources` or by directly editing `~/.gsd/agent/extensions`.
+
+Any resource-overlay distribution must:
+
+- be generated from an exact upstream source identity;
+- compile the source patch into `dist/resources`;
+- regenerate the managed-resource content fingerprint;
+- trigger and verify one controlled synchronization into an integration-owned or otherwise isolated agent directory;
+- be staged side-by-side rather than mutating the active upstream package.
+
+M0.8 will decide whether this prebuilt-resource approach is sufficiently reliable or whether the project must distribute a complete patched source build.
+
+### Consequences
+
+- the initial patch build cannot operate solely on the files present in a global npm installation;
+- release CI needs an exact upstream source checkout or an equivalent reproducible build input;
+- generated resource output and its source patch must remain traceably paired;
+- stale fingerprints become a first-class installation and test failure mode;
+- direct managed-resource edits are treated as unsupported debugging only, never as installation state.
+
+### Evidence
+
+See [`docs/spikes/M0.6-GSD-PACKAGE-LOADING.md`](spikes/M0.6-GSD-PACKAGE-LOADING.md).
