@@ -109,6 +109,7 @@ These are development baselines, not an indefinite support promise. Before code 
 
 ```text
 gsd-herdr/
+├── AGENTS.md
 ├── PLANNING.md
 ├── README.md
 ├── docs/
@@ -365,6 +366,7 @@ Architecture decisions are expanded in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ## 11. Documentation map
 
+- [`AGENTS.md`](AGENTS.md) — mandatory start/end workflow for coding agents.
 - [`README.md`](README.md) — project overview and status.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — component boundaries and runtime flows.
 - [`docs/INTEGRATION_CONTRACT.md`](docs/INTEGRATION_CONTRACT.md) — external backend, runner, and artifact contracts.
@@ -413,5 +415,6 @@ Every future development session must follow this sequence:
 - Defined unit, contract, integration, compatibility, E2E, and canary test requirements in `docs/TESTING.md`.
 - Defined exact GSD-Pi patch maintenance and capability-based Herdr tracking in `docs/UPSTREAM_MAINTENANCE.md`.
 - Recorded ADR-001 through ADR-014 in `docs/DECISIONS.md`.
+- Added `AGENTS.md` so future coding agents are required to read and update this plan and obey the current milestone boundary.
 - Completed M0.3–M0.5.
 - Next: inspect GSD-Pi's released runtime/package loading path for M0.6.
