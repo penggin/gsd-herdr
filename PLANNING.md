@@ -1,6 +1,6 @@
 # GSD–Herdr Living Plan
 
-> **Status:** Documentation and technical-design phase  
+> **Status:** Documentation complete; technical feasibility validation next  
 > **Last updated:** 2026-08-29  
 > **Current milestone:** M0 — Repository foundation and feasibility validation  
 > **Canonical rule:** Every implementation session starts by reading this file and ends by updating it.
@@ -141,9 +141,9 @@ Tasks:
 
 - [x] M0.1 Create the repository.
 - [x] M0.2 Add this living plan.
-- [ ] M0.3 Add project overview and documentation index.
-- [ ] M0.4 Document architecture and responsibility boundaries.
-- [ ] M0.5 Document protocol, configuration, security, testing, and upstream-maintenance plans.
+- [x] M0.3 Add project overview and documentation index.
+- [x] M0.4 Document architecture and responsibility boundaries.
+- [x] M0.5 Document protocol, configuration, security, testing, and upstream-maintenance plans.
 - [ ] M0.6 Inspect the released GSD-Pi package and determine whether `src/resources` can be safely overlaid at runtime.
 - [ ] M0.7 Verify the required Herdr API methods against the installed/released API schema.
 - [ ] M0.8 Decide the patched-GSD distribution mechanism: resource overlay, source build, or both.
@@ -325,10 +325,10 @@ Exit criteria:
 
 The next tasks must be performed in order:
 
-1. Complete M0 documentation files.
-2. Inspect the released GSD-Pi package/runtime loading path.
-3. Verify the released Herdr API schema and methods.
-4. Record the technical-spike findings in this file.
+1. Inspect the released GSD-Pi package/runtime loading path (M0.6).
+2. Verify the released Herdr API schema and required methods (M0.7).
+3. Decide the patched-GSD distribution mechanism from evidence (M0.8).
+4. Write the technical-spike report and revise estimates (M0.9).
 5. Bootstrap code only after M0's patch/build decision is made.
 
 ## 9. Key technical decisions
@@ -401,4 +401,17 @@ Every future development session must follow this sequence:
 - Chose a single overlay repository instead of maintaining full Herdr and GSD-Pi forks.
 - Established a plugin-first architecture with one minimal GSD-Pi patch seam.
 - Defined milestones M0–M7 and made `PLANNING.md` the canonical living plan.
-- Next: create the initial documentation set and complete M0.3–M0.5.
+
+### 2026-08-29 — Documentation foundation
+
+- Added the project overview and documentation index in `README.md`.
+- Defined component ownership, runtime flows, pane pooling, state authority, failure policy, and recovery in `docs/ARCHITECTURE.md`.
+- Defined backend discovery/execution, runner, activity, artifact, and capability contracts in `docs/INTEGRATION_CONTRACT.md`.
+- Defined the proposed schema-v1 configuration in `docs/CONFIGURATION.md`.
+- Defined side-by-side installation, doctor, canary, update, rollback, cleanup, and uninstall behavior in `docs/OPERATIONS.md`.
+- Defined the trust model, secret handling, path/process safety, redaction, and security tests in `docs/SECURITY.md`.
+- Defined unit, contract, integration, compatibility, E2E, and canary test requirements in `docs/TESTING.md`.
+- Defined exact GSD-Pi patch maintenance and capability-based Herdr tracking in `docs/UPSTREAM_MAINTENANCE.md`.
+- Recorded ADR-001 through ADR-014 in `docs/DECISIONS.md`.
+- Completed M0.3–M0.5.
+- Next: inspect GSD-Pi's released runtime/package loading path for M0.6.
