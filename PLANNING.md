@@ -1,6 +1,6 @@
 # GSD–Herdr Living Plan
 
-> **Status:** Documentation complete; technical feasibility validation next  
+> **Status:** M0.6 complete; Herdr API validation next  
 > **Last updated:** 2026-08-29  
 > **Current milestone:** M0 — Repository foundation and feasibility validation  
 > **Canonical rule:** Every implementation session starts by reading this file and ends by updating it.
@@ -145,7 +145,7 @@ Tasks:
 - [x] M0.3 Add project overview and documentation index.
 - [x] M0.4 Document architecture and responsibility boundaries.
 - [x] M0.5 Document protocol, configuration, security, testing, and upstream-maintenance plans.
-- [ ] M0.6 Inspect the released GSD-Pi package and determine whether `src/resources` can be safely overlaid at runtime.
+- [x] M0.6 Inspect the released GSD-Pi package and determine whether `src/resources` can be safely overlaid at runtime. See [`docs/spikes/M0.6-GSD-PACKAGE-LOADING.md`](docs/spikes/M0.6-GSD-PACKAGE-LOADING.md).
 - [ ] M0.7 Verify the required Herdr API methods against the installed/released API schema.
 - [ ] M0.8 Decide the patched-GSD distribution mechanism: resource overlay, source build, or both.
 - [ ] M0.9 Create an executable technical-spike report with findings and revised estimates.
@@ -326,11 +326,10 @@ Exit criteria:
 
 The next tasks must be performed in order:
 
-1. Inspect the released GSD-Pi package/runtime loading path (M0.6).
-2. Verify the released Herdr API schema and required methods (M0.7).
-3. Decide the patched-GSD distribution mechanism from evidence (M0.8).
-4. Write the technical-spike report and revise estimates (M0.9).
-5. Bootstrap code only after M0's patch/build decision is made.
+1. Verify the released Herdr API schema and required methods (M0.7).
+2. Decide the patched-GSD distribution mechanism from evidence and an isolated overlay experiment (M0.8).
+3. Write the executable technical-spike report and revise estimates (M0.9).
+4. Bootstrap code only after M0's patch/build decision is made.
 
 ## 9. Key technical decisions
 
@@ -346,6 +345,7 @@ The next tasks must be performed in order:
 | D008 | Use a persistent worker-pane pool with a default maximum of four panes | Proposed; validate in M4 |
 | D009 | Keep failed panes until manual cleanup; retain successful panes briefly | Proposed; validate with usage |
 | D010 | Initial release targets macOS arm64 only | Accepted |
+| D011 | A released GSD-Pi stack cannot use a `src/resources`-only patch; built resources, fingerprint regeneration, and controlled resync are required | Accepted; see ADR-015 |
 
 Architecture decisions are expanded in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
@@ -361,6 +361,7 @@ Architecture decisions are expanded in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 | Pane closes without child exit artifact | Parent waits indefinitely | Pane/process monitoring and bounded failure transition |
 | Secrets enter artifacts or metadata | Credential exposure | `0600` files, `0700` directories, redaction, no full environment in logs/metadata |
 | Automatic patch applies incorrectly | Broken subagent execution | Exact version/fingerprint checks, `git apply --check`, no production fuzzy apply |
+| A modified `dist/resources` keeps the old precomputed fingerprint | Existing agent directory silently keeps the unpatched bundled extension | Regenerate the resource fingerprint, force one controlled resync, and verify installed digests |
 | Extension and patch protocol mismatch | Dispatch failure | Protocol version negotiation and fail-fast diagnostics |
 | Upstream later adds a native backend hook | Duplicate mechanisms | Remove the patch while retaining extension/runner/plugin implementations |
 
@@ -376,6 +377,7 @@ Architecture decisions are expanded in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 - [`docs/TESTING.md`](docs/TESTING.md) — unit, integration, compatibility, and E2E strategy.
 - [`docs/UPSTREAM_MAINTENANCE.md`](docs/UPSTREAM_MAINTENANCE.md) — patch queue and upstream tracking.
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) — architectural decision records.
+- [`docs/spikes/M0.6-GSD-PACKAGE-LOADING.md`](docs/spikes/M0.6-GSD-PACKAGE-LOADING.md) — evidence for the released GSD-Pi resource-loading and overlay constraint.
 
 ## 12. Plan update protocol
 
@@ -418,3 +420,16 @@ Every future development session must follow this sequence:
 - Added `AGENTS.md` so future coding agents are required to read and update this plan and obey the current milestone boundary.
 - Completed M0.3–M0.5.
 - Next: inspect GSD-Pi's released runtime/package loading path for M0.6.
+
+### 2026-08-29 — M0.6 GSD-Pi package-loading investigation
+
+- Inspected the exact GSD-Pi `v1.16.2` tag at commit `dda097fc89ce10b67e78faa0b947c22bb9ec96a2`.
+- Traced the production path from `dist/loader.js` through `resolveBundledResourcesDirFromPackageRoot()`, `initResources()`, the managed `~/.gsd/agent` copies, and `DefaultResourceLoader`.
+- Confirmed that a complete `dist/resources` tree is preferred over `src/resources` and that the npm publication workflow builds resource TypeScript into that tree before publishing.
+- Confirmed that `dist/resources/.managed-resources-content-hash` can suppress a resync when an overlay changes files without regenerating the fingerprint.
+- Rejected both a `src/resources`-only overlay and direct edits to managed agent-directory extensions as production installation mechanisms.
+- Identified two M0.8 candidates: an exact-version prebuilt `dist/resources` overlay with controlled resync, or a complete patched source build.
+- Added [`docs/spikes/M0.6-GSD-PACKAGE-LOADING.md`](docs/spikes/M0.6-GSD-PACKAGE-LOADING.md) and ADR-015.
+- Evidence was source/release-pipeline inspection only. The execution environment could not resolve npm/GitHub package hosts for a local tarball extraction, so the isolated runtime overlay experiment remains mandatory in M0.8.
+- Completed M0.6.
+- Next: verify the required Herdr `v0.8.2` API methods and request/response shapes for M0.7.
